@@ -15,37 +15,40 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     permissions:
-       id-token: write
-       contents: read
+      id-token: write
+      contents: read
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
           submodules: true
           lfs: false
-      
+
       - name: Use Node.js 16
         uses: actions/setup-node@v3
         with:
-          node-version: 16
-      
+          node-version: '16'
+          cache: 'npm'
+
       - name: Install dependencies
-        run: npm install
-      
+        run: npm ci
+
       - name: Set OpenSSL Legacy Provider
         run: echo "NODE_OPTIONS=--openssl-legacy-provider" >> $GITHUB_ENV
-      
+
       - name: Build project
         run: npm run build
-      
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GENTLE_TREE_05E928803 }}
           action: "upload"
-          app_location: "/" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: "dist" # Built app content directory - optional
+          app_location: "/" # Cambia si el código fuente está en otra carpeta
+          api_location: "" # Si tienes APIs en Azure Functions, cambia esto
+          output_location: "dist" # Asegúrate de que esta es la carpeta de salida después del build
+          skip_app_build: true # No recompilar en Azure si ya lo hicimos antes
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
