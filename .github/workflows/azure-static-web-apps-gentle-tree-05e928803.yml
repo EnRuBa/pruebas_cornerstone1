@@ -34,7 +34,9 @@ jobs:
         run: npm ci
 
       - name: Set OpenSSL Legacy Provider
-        run: echo "NODE_OPTIONS=--openssl-legacy-provider" >> $GITHUB_ENV
+        run: |
+          echo "NODE_OPTIONS=--openssl-legacy-provider" >> $GITHUB_ENV
+          export NODE_OPTIONS=--openssl-legacy-provider
 
       - name: Build project
         run: npm run build
